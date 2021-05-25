@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import matlib
 import scipy.optimize
 from scipy import sparse
 import logging
@@ -32,6 +33,30 @@ def colDeltaCor(emat: np.ndarray, dmat: np.ndarray, threads: int=None) -> np.nda
     _colDeltaCor(emat, dmat, out, num_threads)
     return out
 
+def colDeltaBool(emat: np.ndarray, dmat: np.ndarray, ixs: np.ndarray, threads: int=None) -> np.ndarray:
+    """Calculate the correlation between the displacement (d[:,i])
+    and the difference between a cell and every other (e - e[:, i])
+    
+    Parallel cython+OpenMP implemetation
+
+    Arguments
+    ---------
+    emat: np.ndarray (ngenes, ncells)
+        gene expression matrix
+    dmat: np.ndarray (ngenes, ncells)
+        gene velocity/displacement matrix
+    ixs: the neighborhood matrix (ncells, nneighbours)
+        ixs[i, k] is the kth neighbour to the cell i
+    threads: int
+        number of parallel threads to use
+    """
+    ncell = emat.shape[1]
+    corrcoef = np.zeros((ncell,ncell))
+    for i_c in range(ncell):
+        v_bool = np.matlib.repmat(np.sign(dmat[:,i_c]),ncell,1)
+        displ_bool= np.sign(emat.T-np.matlib.repmat(emat[:,i_c],ncell,1))
+        corrcoef[i_c,:] = np.sum(v_bool==displ_bool,1)
+    return corrcoef
 
 def colDeltaCorpartial(emat: np.ndarray, dmat: np.ndarray, ixs: np.ndarray, threads: int=None) -> np.ndarray:
     """Calculate the correlation between the displacement (d[:,i])

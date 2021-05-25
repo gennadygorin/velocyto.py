@@ -17,7 +17,7 @@ import loompy
 from .neighbors import knn_distance_matrix, connectivity_to_weights, convolve_by_sparse_weights, BalancedKNN
 from .estimation import fit_slope, fit_slope_offset, fit_slope_weighted, fit_slope_weighted_offset
 from .estimation import clusters_stats
-from .estimation import colDeltaCor, colDeltaCorSqrt, colDeltaCorLog10, colDeltaCorpartial, colDeltaCorSqrtpartial, colDeltaCorLog10partial
+from .estimation import colDeltaCor, colDeltaCorSqrt, colDeltaCorLog10, colDeltaCorpartial, colDeltaCorSqrtpartial, colDeltaCorLog10partial, colDeltaBool
 from .diffusion import Diffusion
 from .serialization import dump_hdf5, load_hdf5
 from typing import *
@@ -1587,6 +1587,11 @@ class VelocytoLoom:
                     logging.debug(f"Correlation Calculation for negative control")
                     delta_hi_dim_rndm = np.log2(np.abs(hi_dim_t_rndm) + psc) - log2hidim
                     self.corrcoef_random = colDeltaCorpartial(log2hidim, delta_hi_dim_rndm, neigh_ixs, threads=threads)
+            elif transform == "bool":
+                self.corrcoef = colDeltaBool(hi_dim, hi_dim_t - hi_dim)
+                if calculate_randomized:
+                    logging.debug(f"Correlation Calculation for negative control")
+                    self.corrcoef_random = colDeltaBool(hi_dim, hi_dim_t_rndm - hi_dim)
             elif transform == "linear":
                 self.corrcoef = colDeltaCorpartial(hi_dim, hi_dim_t - hi_dim, neigh_ixs, threads=threads)
                 if calculate_randomized:
