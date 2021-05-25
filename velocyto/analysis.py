@@ -1587,11 +1587,6 @@ class VelocytoLoom:
                     logging.debug(f"Correlation Calculation for negative control")
                     delta_hi_dim_rndm = np.log2(np.abs(hi_dim_t_rndm) + psc) - log2hidim
                     self.corrcoef_random = colDeltaCorpartial(log2hidim, delta_hi_dim_rndm, neigh_ixs, threads=threads)
-            elif transform == "bool":
-                self.corrcoef = colDeltaBool(hi_dim, hi_dim_t - hi_dim)
-                if calculate_randomized:
-                    logging.debug(f"Correlation Calculation for negative control")
-                    self.corrcoef_random = colDeltaBool(hi_dim, hi_dim_t_rndm - hi_dim)
             elif transform == "linear":
                 self.corrcoef = colDeltaCorpartial(hi_dim, hi_dim_t - hi_dim, neigh_ixs, threads=threads)
                 if calculate_randomized:
@@ -1653,7 +1648,12 @@ class VelocytoLoom:
                 if calculate_randomized:
                     logging.debug(f"Correlation Calculation for negative control")
                     delta_hi_dim_rndm = np.log2(np.abs(hi_dim_t_rndm) + 1) - log2hidim
-                    self.corrcoef_random = colDeltaCor(log2hidim, delta_hi_dim_rndm, threads=threads)
+                    self.corrcoef_random = colDeltaCor(log2hidim, delta_hi_dim_rndm, threads=threads)           
+            elif transform == "bool":
+                self.corrcoef = colDeltaBool(hi_dim, hi_dim_t - hi_dim)
+                if calculate_randomized:
+                    logging.debug(f"Correlation Calculation for negative control")
+                    self.corrcoef_random = colDeltaBool(hi_dim, hi_dim_t_rndm - hi_dim)
             elif transform == "linear":
                 self.corrcoef = colDeltaCor(hi_dim, hi_dim_t - hi_dim, threads=threads)
                 if calculate_randomized:
