@@ -2096,6 +2096,7 @@ class VelocytoLoom:
         plt.quiver(XY[:, 0], XY[:, 1], UV[:, 0], UV[:, 1],
                    scale=quiver_scale, zorder=20000, **_quiver_kwargs)
         plt.axis("off")
+        return XY, UV
 
     def plot_arrows_embedding(self, choice: Union[str, int]="auto", quiver_scale: Union[str, float]="auto", scale_type: str="relative",
                               plot_scatter: bool=False, scatter_kwargs: Dict={}, color_arrow: str="cluster",
