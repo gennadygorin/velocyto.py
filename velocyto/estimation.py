@@ -36,6 +36,7 @@ def colDeltaCor(emat: np.ndarray, dmat: np.ndarray, threads: int=None) -> np.nda
 def colDeltaBool(emat: np.ndarray, dmat: np.ndarray) -> np.ndarray:    
     ncell = emat.shape[1]
     ngene = emat.shape[0]
+    print('ngene',ngene)
     corrcoef = np.zeros((ncell,ncell))
     for i_c in range(ncell):
         v_bool = np.matlib.repmat(np.sign(dmat[:,i_c]),ncell,1)
