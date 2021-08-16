@@ -35,11 +35,12 @@ def colDeltaCor(emat: np.ndarray, dmat: np.ndarray, threads: int=None) -> np.nda
 
 def colDeltaBool(emat: np.ndarray, dmat: np.ndarray) -> np.ndarray:    
     ncell = emat.shape[1]
+    ngene = emat.shape[0]
     corrcoef = np.zeros((ncell,ncell))
     for i_c in range(ncell):
         v_bool = np.matlib.repmat(np.sign(dmat[:,i_c]),ncell,1)
         displ_bool= np.sign(emat.T-np.matlib.repmat(emat[:,i_c],ncell,1))
-        corrcoef[i_c,:] = np.sum(v_bool==displ_bool,1)
+        corrcoef[i_c,:] = np.sum(v_bool==displ_bool,1)/ngene
     return corrcoef
 
 def colDeltaCorpartial(emat: np.ndarray, dmat: np.ndarray, ixs: np.ndarray, threads: int=None) -> np.ndarray:
