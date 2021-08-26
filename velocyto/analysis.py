@@ -146,7 +146,7 @@ class VelocytoLoom:
         ------
         Nothing but it removes some cells from S and U.
         """
-        self.S, self.U, self.A = (X[bool_array, :] for X in (self.S, self.U, self.A))
+        self.S, self.U, self.A = (X[:, bool_array] for X in (self.S, self.U, self.A))
         self.initial_cell_size = self.initial_cell_size[bool_array]
         self.initial_Ucell_size = self.initial_Ucell_size[bool_array]
         try:
