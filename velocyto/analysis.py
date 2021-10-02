@@ -1018,8 +1018,8 @@ class VelocytoLoom:
             self.Sx = convolve_by_sparse_weights(self.S, self.knn_smoothing_w)
             self.Ux = convolve_by_sparse_weights(self.U, self.knn_smoothing_w)
             if cal_var:
-                self.Sx_var = convolve_by_sparse_weights(self.S**2, self.knn_smoothing_w)-self.S**2
-                self.Sx_var = convolve_by_sparse_weights(self.U**2, self.knn_smoothing_w)-self.U**2
+                self.Sx_var = convolve_by_sparse_weights(self.S**2, self.knn_smoothing_w)-self.Sx**2
+                self.Sx_var = convolve_by_sparse_weights(self.U**2, self.knn_smoothing_w)-self.Ux**2
         if maximum:
             self.Sx = np.maximum(self.S_sz, self.Sx)
             self.Ux = np.maximum(self.U_sz, self.Ux)
