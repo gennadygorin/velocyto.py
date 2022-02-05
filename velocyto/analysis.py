@@ -930,7 +930,7 @@ class VelocytoLoom:
                    c=self.colorandum)
         ax.view_init(elev=elev, azim=azim)
 
-   def knn_imputation(self, k: int=None, pca_space: float=True, metric: str="euclidean", diag: float=1,
+    def knn_imputation(self, k: int=None, pca_space: float=True, metric: str="euclidean", diag: float=1,
                        n_pca_dims: int=None, maximum: bool=False, size_norm: bool=True, cal_var: bool=True,
                        use_uncentered_var=True,
                        balanced: bool=False, b_sight: int=None, b_maxl: int=None,
