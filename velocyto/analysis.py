@@ -931,11 +931,12 @@ class VelocytoLoom:
         ax.view_init(elev=elev, azim=azim)
 
     def knn_imputation(self, k: int=None, pca_space: float=True, metric: str="euclidean", diag: float=1,
-                       n_pca_dims: int=None, maximum: bool=False, size_norm: bool=True,
+                       n_pca_dims: int=None, maximum: bool=False, size_norm: bool=True, cal_var: bool=True,
+                       use_uncentered_var=False,
                        balanced: bool=False, b_sight: int=None, b_maxl: int=None,
                        group_constraint: Union[str, np.ndarray]=None, n_jobs: int=8) -> None:
         """Performs k-nn smoothing of the data matrix
-
+​
         Arguments
         ---------
         k: int
@@ -965,7 +966,7 @@ class VelocytoLoom:
             if an array of integers of shape vlm.S.shape[1] it will be interpreted as labels of the groups
         n_jobs: int, default 8
             number of parallel jobs in knn calculation
-
+​
         Returns
         -------
         Nothing but it creates the attributes:
@@ -1011,13 +1012,25 @@ class VelocytoLoom:
         if size_norm:
             self.Sx = convolve_by_sparse_weights(self.S_sz, self.knn_smoothing_w)
             self.Ux = convolve_by_sparse_weights(self.U_sz, self.knn_smoothing_w)
+            if cal_var:
+                self.Sx_var = convolve_by_sparse_weights(self.S_sz**2, self.knn_smoothing_w)
+                self.Ux_var = convolve_by_sparse_weights(self.U_sz**2, self.knn_smoothing_w)
+                if not use_uncentered_var: #Use centered variance
+                    self.Sx_var -= self.Sx**2
+                    self.Ux_var -= self.Ux**2
         else:
             self.Sx = convolve_by_sparse_weights(self.S, self.knn_smoothing_w)
             self.Ux = convolve_by_sparse_weights(self.U, self.knn_smoothing_w)
+            if cal_var:
+                self.Sx_var = convolve_by_sparse_weights(self.S**2, self.knn_smoothing_w)
+                self.Ux_var = convolve_by_sparse_weights(self.U**2, self.knn_smoothing_w)
+                if not use_uncentered_var: #Use centered variance
+                    self.Sx_var -= self.Sx**2
+                    self.Ux_var -= self.Ux**2
         if maximum:
             self.Sx = np.maximum(self.S_sz, self.Sx)
             self.Ux = np.maximum(self.U_sz, self.Ux)
-
+​
         # Make a differently named varaible for backwards compatibility
         self.Sx_sz = np.copy(self.Sx)
         self.Ux_sz = np.copy(self.Ux)
@@ -1658,7 +1671,7 @@ class VelocytoLoom:
                 self.corrcoef = colDeltaCor(hi_dim, hi_dim_t - hi_dim, threads=threads)
                 if calculate_randomized:
                     logging.debug(f"Correlation Calculation for negative control")
-                    self.corrcoef_random = colDeltaCor(hi_dim, hi_dim_t_rndm - hi_dim, threads=threads, psc=psc)
+                    self.corrcoef_random = colDeltaCor(hi_dim, hi_dim_t_rndm - hi_dim, threads=threads)
             elif transform == "sqrt":
                 delta_hi_dim = hi_dim_t - hi_dim
                 self.corrcoef = colDeltaCorSqrt(hi_dim, np.sqrt(np.abs(delta_hi_dim) + psc) * np.sign(delta_hi_dim), threads=threads, psc=psc)
@@ -2096,6 +2109,7 @@ class VelocytoLoom:
         plt.quiver(XY[:, 0], XY[:, 1], UV[:, 0], UV[:, 1],
                    scale=quiver_scale, zorder=20000, **_quiver_kwargs)
         plt.axis("off")
+        return XY, UV
 
     def plot_arrows_embedding(self, choice: Union[str, int]="auto", quiver_scale: Union[str, float]="auto", scale_type: str="relative",
                               plot_scatter: bool=False, scatter_kwargs: Dict={}, color_arrow: str="cluster",
