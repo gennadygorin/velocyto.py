@@ -931,7 +931,7 @@ class VelocytoLoom:
         ax.view_init(elev=elev, azim=azim)
 
     def knn_imputation(self, k: int=None, pca_space: float=True, metric: str="euclidean", diag: float=1,
-                       n_pca_dims: int=None, maximum: bool=False, size_norm: bool=True, cal_var: bool=True,
+                       n_pca_dims: int=None, maximum: bool=False, size_norm: bool=True, cal_var: bool=True,use_uncentered_var=False,
                        balanced: bool=False, b_sight: int=None, b_maxl: int=None,
                        group_constraint: Union[str, np.ndarray]=None, n_jobs: int=8) -> None:
         """Performs k-nn smoothing of the data matrix
@@ -1011,21 +1011,27 @@ class VelocytoLoom:
             self.Sx = convolve_by_sparse_weights(self.S_sz, self.knn_smoothing_w)
             self.Ux = convolve_by_sparse_weights(self.U_sz, self.knn_smoothing_w)
             if cal_var: 
-                self.Sx_var = convolve_by_sparse_weights(self.S_sz**2, self.knn_smoothing_w) - self.Sx**2
-                self.Ux_var = convolve_by_sparse_weights(self.U_sz**2, self.knn_smoothing_w) - self.Ux**2
+                self.Sx_var = convolve_by_sparse_weights(self.S_sz**2, self.knn_smoothing_w)
+                self.Ux_var = convolve_by_sparse_weights(self.U_sz**2, self.knn_smoothing_w)
+                if not use_uncentered_var: #Use centered variance
+                    self.Sx_var -= self.Sx**2
+                    self.Ux_var -= self.Ux**2
         else:
             self.Sx = convolve_by_sparse_weights(self.S, self.knn_smoothing_w)
             self.Ux = convolve_by_sparse_weights(self.U, self.knn_smoothing_w)
             if cal_var:
-                self.Sx_var = convolve_by_sparse_weights(self.S**2, self.knn_smoothing_w) - self.Sx**2
-                self.Ux_var = convolve_by_sparse_weights(self.U**2, self.knn_smoothing_w) - self.Ux**2
+                self.Sx_var = convolve_by_sparse_weights(self.S**2, self.knn_smoothing_w)
+                self.Ux_var = convolve_by_sparse_weights(self.U**2, self.knn_smoothing_w)
+                if not use_uncentered_var: #Use centered variance
+                    self.Sx_var -= self.Sx**2
+                    self.Ux_var -= self.Ux**2
         if maximum:
             self.Sx = np.maximum(self.S_sz, self.Sx)
             self.Ux = np.maximum(self.U_sz, self.Ux)
         # Make a differently named varaible for backwards compatibility
         self.Sx_sz = np.copy(self.Sx)
         self.Ux_sz = np.copy(self.Ux)
-
+        
     def knn_imputation_precomputed(self, knn_smoothing_w: sparse.lil_matrix, maximum: bool=False) -> None:
         """Performs k-nn imputation (like `.knn_imputation()`) but with a precomputed weight matrix
         
