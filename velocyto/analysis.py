@@ -932,7 +932,7 @@ class VelocytoLoom:
 
     def knn_imputation(self, k: int=None, pca_space: float=True, metric: str="euclidean", diag: float=1,
                        n_pca_dims: int=None, maximum: bool=False, size_norm: bool=True, cal_var: bool=True,
-                       use_uncentered_var=True,
+                       use_uncentered_var=False,
                        balanced: bool=False, b_sight: int=None, b_maxl: int=None,
                        group_constraint: Union[str, np.ndarray]=None, n_jobs: int=8) -> None:
         """Performs k-nn smoothing of the data matrix
