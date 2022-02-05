@@ -936,7 +936,6 @@ class VelocytoLoom:
                        balanced: bool=False, b_sight: int=None, b_maxl: int=None,
                        group_constraint: Union[str, np.ndarray]=None, n_jobs: int=8) -> None:
         """Performs k-nn smoothing of the data matrix
-​
         Arguments
         ---------
         k: int
@@ -1012,7 +1011,7 @@ class VelocytoLoom:
         if size_norm:
             self.Sx = convolve_by_sparse_weights(self.S_sz, self.knn_smoothing_w)
             self.Ux = convolve_by_sparse_weights(self.U_sz, self.knn_smoothing_w)
-            if cal_var:
+            if cal_var: 
                 self.Sx_var = convolve_by_sparse_weights(self.S_sz**2, self.knn_smoothing_w)
                 self.Ux_var = convolve_by_sparse_weights(self.U_sz**2, self.knn_smoothing_w)
                 if not use_uncentered_var: #Use centered variance
@@ -1030,7 +1029,6 @@ class VelocytoLoom:
         if maximum:
             self.Sx = np.maximum(self.S_sz, self.Sx)
             self.Ux = np.maximum(self.U_sz, self.Ux)
-​
         # Make a differently named varaible for backwards compatibility
         self.Sx_sz = np.copy(self.Sx)
         self.Ux_sz = np.copy(self.Ux)
